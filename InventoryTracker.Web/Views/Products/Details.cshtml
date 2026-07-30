@@ -1,0 +1,102 @@
+@model InventoryTracker.Web.Models.Product
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<h1>@Model.Name <small class="text-muted">(@Model.Sku)</small></h1>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<dl class="row">
+    <dt class="col-sm-3">Description</dt>
+    <dd class="col-sm-9">@(Model.Description ?? "-")</dd>
+
+    <dt class="col-sm-3">Current Stock</dt>
+    <dd class="col-sm-9">
+        <strong>@Model.CurrentStock</strong>
+        @if (Model.CurrentStock <= Model.ReorderLevel)
+        {
+            <span class="badge bg-warning text-dark">Low stock</span>
+        }
+    </dd>
+
+    <dt class="col-sm-3">Reorder Level</dt>
+    <dd class="col-sm-9">@Model.ReorderLevel</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Edit Product</a>
+<a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+
+<hr />
+
+<h3>Record a Movement</h3>
+<form asp-action="RecordMovement" method="post" class="row g-2 align-items-end mb-4">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="productId" value="@Model.Id" />
+
+    <div class="col-auto">
+        <label class="form-label">Type</label>
+        <select name="type" class="form-select">
+            <option value="In">In</option>
+            <option value="Out">Out</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <label class="form-label">Quantity</label>
+        <input type="number" name="quantity" min="1" class="form-control" required />
+    </div>
+    <div class="col-auto">
+        <label class="form-label">Note</label>
+        <input type="text" name="note" class="form-control" placeholder="Optional" />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Record</button>
+    </div>
+</form>
+
+<h3>Movement History</h3>
+@if (!Model.Movements.Any())
+{
+    <p class="text-muted">No movements recorded yet.</p>
+}
+else
+{
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Note</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var m in Model.Movements)
+            {
+                <tr>
+                    <td>@m.CreatedUtc.ToLocalTime().ToString("g")</td>
+                    <td>
+                        @if (m.Type == InventoryTracker.Web.Models.StockMovementType.In)
+                        {
+                            <span class="badge bg-success">In</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Out</span>
+                        }
+                    </td>
+                    <td>@m.Quantity</td>
+                    <td>@(m.Note ?? "-")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
