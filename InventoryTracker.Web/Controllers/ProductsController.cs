@@ -13,7 +13,7 @@ public class ProductsController : Controller
         _stockService = stockService;
     }
 
-    // GET: /Products
+  
     public async Task<IActionResult> Index(string? search)
     {
         var products = await _stockService.GetAllProductsWithStockAsync(search);
@@ -21,7 +21,7 @@ public class ProductsController : Controller
         return View(products);
     }
 
-    // GET: /Products/Details/5
+ 
     public async Task<IActionResult> Details(int id)
     {
         var product = await _stockService.GetProductWithMovementsAsync(id);
@@ -31,13 +31,13 @@ public class ProductsController : Controller
         return View(product);
     }
 
-    // GET: /Products/Create
+   
     public IActionResult Create()
     {
         return View(new Product());
     }
 
-    // POST: /Products/Create
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Product product)
@@ -56,7 +56,7 @@ public class ProductsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // GET: /Products/Edit/5
+
     public async Task<IActionResult> Edit(int id)
     {
         var product = await _stockService.GetProductWithMovementsAsync(id);
@@ -66,7 +66,7 @@ public class ProductsController : Controller
         return View(product);
     }
 
-    // POST: /Products/Edit/5
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, Product product)
@@ -88,7 +88,7 @@ public class ProductsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // POST: /Products/Deactivate/5
+  
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Deactivate(int id)
@@ -102,7 +102,7 @@ public class ProductsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // POST: /Products/RecordMovement
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RecordMovement(int productId, StockMovementType type, int quantity, string? note)
